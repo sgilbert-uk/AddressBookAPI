@@ -6,6 +6,7 @@
 ### How to use
 * Run ```./gradlew bootRun``` from the command line to start up the application.
 
+* Call endpoint ```/users/{lastName}``` to find address json data based on last name.
 
 * The h2 database can be accessed by /h2-console and inputing the following 
 into the login page:
