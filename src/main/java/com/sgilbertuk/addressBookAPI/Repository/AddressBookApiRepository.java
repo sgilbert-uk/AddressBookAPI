@@ -1,5 +1,12 @@
 package com.sgilbertuk.addressBookAPI.Repository;
 
-public interface AddressBookApiRepository {
-    //TODO: set up db call to get list of address data based on last name
+import com.sgilbertuk.addressBookAPI.Model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface AddressBookApiRepository  extends JpaRepository<User, Integer> {
+
+    List<User> findByLastName(String name);
+
 }
