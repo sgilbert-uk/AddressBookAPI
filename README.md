@@ -1,7 +1,10 @@
 # AddressBookApi
 
+### Requirements
+* Gradle
+
 ### How to use
-* Run ./gradlew bootRun to start up the application.
+* Run ```./gradlew bootRun``` from the command line to start up the application.
 
 
 * The h2 database can be accessed by /h2-console and inputing the following 
