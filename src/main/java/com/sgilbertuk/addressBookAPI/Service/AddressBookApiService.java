@@ -13,12 +13,11 @@ public class AddressBookApiService {
 
     @Autowired
     public AddressBookApiRepository addressBookRepository;
-
-    public List<User> getName(String name) throws Exception {
-        List<User> userList = addressBookRepository.findByLastName(name);
-        if (userList.isEmpty()) {
-            throw new UserNotFoundException("No user with last name " + name + " was found");
+    public List<User> getName(String name) throws UserNotFoundException {
+        try{
+            return addressBookRepository.findByLastName(name);
+        } catch (UserNotFoundException ex){
+            throw new UserNotFoundException("No user with last name " + name + " was found", ex);
         }
-        return userList;
     }
 }
