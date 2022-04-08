@@ -7,18 +7,19 @@ import com.sgilbertuk.addressBookAPI.Service.AddressBookApiService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AddressBookApiControllerTest {
-
-    //TODO: Assert HTTP status
 
     @Mock
     private AddressBookApiRepository apiRepository;
@@ -29,32 +30,33 @@ public class AddressBookApiControllerTest {
     @InjectMocks
     private final AddressBookApiController addressController = new AddressBookApiController();
 
+    public User user = new User();
+
     @BeforeEach
     public void init(){
         MockitoAnnotations.openMocks(this);
+        user.setLastName("lovelace");
     }
 
+    // Note: These tests need renaming
+
     @Test
-    void given_validLastName_andLastNamePresent_whenGetEndpointCalled_Expect200() throws Exception {
-        // Given
-        User user =  new User();
-        user.setLastName("lovelace");
-        // When
-        when(apiRepository.findByLastName(user.getLastName())).thenReturn(List.of(user));
+    void given_validLastName_andLastNamePresent_whenGetEndpointCalled_Expect200() throws Exception { // needs a rename
+        // Given/When
         when(apiService.getName(user.getLastName())).thenReturn(List.of(user));
-        when(addressController.getUser(user.getLastName())).thenReturn(List.of(user));
+        List<User> actual = addressController.getUser(user.getLastName());
         // Then
-        assertThat(addressController.getUser(user.getLastName())).contains(user);
+        verify(apiService,times(1)).getName(user.getLastName());
+        assertThat(actual).isEqualTo(List.of(user));
     }
 
     @Test
-    void given_validLastName_andLastNameNotPresent_whenGetEndpointCalled_Expect404(){
+    void given_validLastName_andLastNameNotPresent_whenGetEndpointCalled_Expect404() { // needs a rename
         // Given
-        User user =  new User();
-        user.setLastName("lovelace");
+        String wrongName = "smith";
         // When
-        when(apiRepository.findByLastName("smith")).thenThrow(UserNotFoundException.class);
-        Assertions.assertThrows(UserNotFoundException.class, () -> apiRepository.findByLastName("smith"),
+        when(apiService.getName(wrongName)).thenThrow(UserNotFoundException.class);
+        Assertions.assertThrows(UserNotFoundException.class, () -> apiService.getName(wrongName),
                 "No user with last name smith was found");
     }
 }

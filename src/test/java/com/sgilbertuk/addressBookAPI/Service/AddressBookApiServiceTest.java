@@ -23,33 +23,34 @@ public class AddressBookApiServiceTest {
     @InjectMocks
     private final AddressBookApiService apiService = new AddressBookApiService();
 
+    public User user = new User();
+
     @BeforeEach
     public void init(){
         MockitoAnnotations.openMocks(this);
+        user.setLastName("lovelace");
     }
 
     @Test
-    void given_validLastName_andLastNamePresent_whenGetUserByLastName_Expect200() throws Exception {
-        // Given
-        User user = new User();
-        user.setLastName("lovelace");
-        // When
+    void given_validLastName_andLastNamePresent_whenGetUserByLastName_Expect200() throws UserNotFoundException {
+        // Given/When
         when(apiRepository.findByLastName(user.getLastName())).thenReturn(List.of(user));
-        when(apiService.getName(user.getLastName())).thenReturn(List.of(user));
+        apiService.getName(user.getLastName());
         // Then
         assertThat((apiService.getName(user.getLastName())).get(0).getLastName()).isEqualTo("lovelace");
     }
 
     @Test
-    void given_validLastName_andLastNameNotPresent_whenGetUserByLastName_expectThrowNotFoundException() throws Exception {
+    void given_validLastName_andLastNameNotPresent_whenGetUserByLastName_expectThrowNotFoundException() throws UserNotFoundException {
         // Given
-        User user = new User();
-        user.setLastName("lovelace");
+        String wrongName = "smith";
         // When
-        when(apiRepository.findByLastName("smith")).thenThrow(UserNotFoundException.class);
-        Assertions.assertThrows(UserNotFoundException.class, () -> apiRepository.findByLastName("smith"),
-                "No user with last name smith was found");
-
+        when(apiRepository.findByLastName(wrongName)).thenThrow(UserNotFoundException.class);
+        try {
+            apiService.getName(wrongName);
+        } catch (UserNotFoundException ex){
+            Assertions.assertThrows(UserNotFoundException.class, () -> apiRepository.findByLastName(wrongName),
+                    "No user with last name" + wrongName + " was found");
+        }
     }
-
 }
